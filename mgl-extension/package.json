@@ -1,0 +1,132 @@
+{
+  "name": "magnificent-language-vscode",
+  "displayName": "Magnificent Language",
+  "description": "VS Code support for Magnificent Language (MGL): syntax highlighting, snippets, file associations, and CLI commands.",
+  "version": "1.0.0",
+  "publisher": "magnificent-language",
+  "license": "MIT",
+  "icon": "mgl-extension-icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "mgl",
+    "magnificent-language",
+    "programming-language",
+    "syntax-highlighting",
+    "snippets"
+  ],
+  "activationEvents": [
+    "onLanguage:mgl",
+    "onCommand:mgl.runFile",
+    "onCommand:mgl.openRepl",
+    "onCommand:mgl.initProject",
+    "onCommand:mgl.insertMainTemplate",
+    "onCommand:mgl.insertImportStatement"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mgl",
+        "aliases": [
+          "MGL",
+          "Magnificent Language",
+          "magnificent-language"
+        ],
+        "extensions": [
+          ".mgl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mgl",
+        "scopeName": "source.mgl",
+        "path": "./syntaxes/mgl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "mgl",
+        "path": "./snippets/mgl.code-snippets"
+      }
+    ],
+    "commands": [
+      {
+        "command": "mgl.runFile",
+        "title": "MGL: Run Current File",
+        "category": "MGL"
+      },
+      {
+        "command": "mgl.openRepl",
+        "title": "MGL: Open REPL",
+        "category": "MGL"
+      },
+      {
+        "command": "mgl.initProject",
+        "title": "MGL: Initialize Project",
+        "category": "MGL"
+      },
+      {
+        "command": "mgl.insertMainTemplate",
+        "title": "MGL: Insert Main Template",
+        "category": "MGL"
+      },
+      {
+        "command": "mgl.insertImportStatement",
+        "title": "MGL: Insert Import Statement",
+        "category": "MGL"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mgl.runFile",
+          "when": "resourceExtname == .mgl",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mgl.runFile",
+          "when": "editorLangId == mgl"
+        },
+        {
+          "command": "mgl.openRepl"
+        },
+        {
+          "command": "mgl.initProject"
+        },
+        {
+          "command": "mgl.insertMainTemplate",
+          "when": "editorLangId == mgl"
+        },
+        {
+          "command": "mgl.insertImportStatement",
+          "when": "editorLangId == mgl"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Magnificent Language",
+      "properties": {
+        "magnificentLanguage.cliPath": {
+          "type": "string",
+          "default": "mgl",
+          "description": "Path to the MGL CLI used by the VS Code commands."
+        },
+        "magnificentLanguage.terminalName": {
+          "type": "string",
+          "default": "MGL",
+          "description": "Terminal name used for MGL run and REPL commands."
+        }
+      }
+    }
+  }
+}

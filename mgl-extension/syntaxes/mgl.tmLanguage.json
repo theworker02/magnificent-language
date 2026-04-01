@@ -1,0 +1,142 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Magnificent Language",
+  "scopeName": "source.mgl",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#declarations" },
+    { "include": "#calls" },
+    { "include": "#operators" },
+    { "include": "#constants" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.mgl",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.mgl",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.string.begin.mgl" }
+          },
+          "end": "\"",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.string.end.mgl" }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.mgl",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.mgl",
+          "begin": "'",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.string.begin.mgl" }
+          },
+          "end": "'",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.string.end.mgl" }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.mgl",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.mgl",
+          "match": "\\b\\d+(?:\\.\\d+)?\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.mgl",
+          "match": "\\b(?:if|else|loop|from|to|step|return|import)\\b"
+        },
+        {
+          "name": "storage.type.mgl",
+          "match": "\\b(?:let|func|class)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.mgl",
+          "match": "\\b(?:and|or)\\b"
+        },
+        {
+          "name": "variable.language.mgl",
+          "match": "\\bself\\b"
+        }
+      ]
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "name": "meta.function.mgl",
+          "match": "\\b(func)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.function.mgl" },
+            "2": { "name": "entity.name.function.mgl" }
+          }
+        },
+        {
+          "name": "meta.class.mgl",
+          "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.class.mgl" },
+            "2": { "name": "entity.name.type.class.mgl" }
+          }
+        }
+      ]
+    },
+    "calls": {
+      "patterns": [
+        {
+          "name": "meta.function-call.mgl",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "support.function.mgl" }
+          }
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.mgl",
+          "match": "==|!=|<=|>=|=|<|>|\\+|-|\\*|/|%|!"
+        },
+        {
+          "name": "punctuation.accessor.mgl",
+          "match": "\\."
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.mgl",
+          "match": "\\b(?:true|false|null)\\b"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+import "./modules/math.mgl"
+
+let values = [1, 2, 3]
+push(values, 4)
+
+print("sum=" + math.add(7, 5))
+print("average=" + math.average(values))
+print("length=" + length(values))
+print("kind=" + type(values))

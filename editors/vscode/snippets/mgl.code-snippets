@@ -1,0 +1,138 @@
+{
+  "Function": {
+    "prefix": "func",
+    "body": [
+      "func ${1:name}(${2:args}) {",
+      "  ${3:// body}",
+      "}"
+    ],
+    "description": "Create an MGL function"
+  },
+  "Class": {
+    "prefix": "class",
+    "body": [
+      "class ${1:Name} {",
+      "  func init(${2:args}) {",
+      "    ${3:// initialize}",
+      "  }",
+      "",
+      "  func ${4:methodName}(${5}) {",
+      "    ${6:// body}",
+      "  }",
+      "}"
+    ],
+    "description": "Create an MGL class"
+  },
+  "Method": {
+    "prefix": "method",
+    "body": [
+      "func ${1:name}(${2:args}) {",
+      "  ${3:// body}",
+      "}"
+    ],
+    "description": "Create an MGL method"
+  },
+  "If": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition} {",
+      "  ${2:// body}",
+      "}"
+    ],
+    "description": "Create an if block"
+  },
+  "If Else": {
+    "prefix": "ife",
+    "body": [
+      "if ${1:condition} {",
+      "  ${2:// true branch}",
+      "} else {",
+      "  ${3:// false branch}",
+      "}"
+    ],
+    "description": "Create an if/else block"
+  },
+  "Else If": {
+    "prefix": "elif",
+    "body": [
+      "else if ${1:condition} {",
+      "  ${2:// body}",
+      "}"
+    ],
+    "description": "Create an else-if branch"
+  },
+  "Loop": {
+    "prefix": "loop",
+    "body": [
+      "loop ${1:i} from ${2:0} to ${3:10} {",
+      "  ${4:print(${1:i})}",
+      "}"
+    ],
+    "description": "Create a range loop"
+  },
+  "Loop Step": {
+    "prefix": "loops",
+    "body": [
+      "loop ${1:i} from ${2:10} to ${3:0} step ${4:-1} {",
+      "  ${5:print(${1:i})}",
+      "}"
+    ],
+    "description": "Create a stepped loop"
+  },
+  "Import": {
+    "prefix": "import",
+    "body": [
+      "import \"${1:./module.mgl}\""
+    ],
+    "description": "Import an MGL module"
+  },
+  "Array": {
+    "prefix": "array",
+    "body": [
+      "let ${1:values} = [${2:1, 2, 3}]"
+    ],
+    "description": "Create an array literal"
+  },
+  "Print": {
+    "prefix": "print",
+    "body": [
+      "print(${1:value})"
+    ],
+    "description": "Print a value"
+  },
+  "Class with Constructor": {
+    "prefix": "ctor",
+    "body": [
+      "class ${1:Name} {",
+      "  func init(${2:args}) {",
+      "    ${3:self.value = ${2:value}}",
+      "  }",
+      "}"
+    ],
+    "description": "Create a class constructor"
+  },
+  "Main": {
+    "prefix": "main",
+    "body": [
+      "func main() {",
+      "  ${1:print(\"Hello from MGL\")}",
+      "}",
+      "",
+      "main()"
+    ],
+    "description": "Create a simple main entrypoint"
+  },
+  "Module": {
+    "prefix": "module",
+    "body": [
+      "func ${1:add}(a, b) {",
+      "  return a + b",
+      "}",
+      "",
+      "func ${2:describe}() {",
+      "  return \"${3:module ready}\"",
+      "}"
+    ],
+    "description": "Create a simple MGL module"
+  }
+}

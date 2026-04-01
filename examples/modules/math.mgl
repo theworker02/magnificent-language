@@ -1,0 +1,13 @@
+func add(a, b) {
+  return a + b
+}
+
+func average(values) {
+  let total = 0
+
+  loop i from 0 to length(values) - 1 {
+    total = total + values[i]
+  }
+
+  return total / length(values)
+}

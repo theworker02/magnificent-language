@@ -1,0 +1,132 @@
+:root {
+  --bg: #f5f1e7;
+  --paper: rgba(255, 255, 255, 0.78);
+  --text: #1f1b17;
+  --accent: #0d6f5b;
+  --accent-strong: #0a4f41;
+  --border: rgba(31, 27, 23, 0.14);
+  --shadow: 0 24px 60px rgba(17, 23, 21, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(13, 111, 91, 0.16), transparent 32%),
+    linear-gradient(180deg, #efe7d1 0%, var(--bg) 40%, #f8f5ee 100%);
+}
+
+.hero {
+  padding: 5rem 1.5rem 2rem;
+}
+
+.hero__inner,
+.content {
+  width: min(980px, 100%);
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  font-size: 0.82rem;
+}
+
+h1,
+h2 {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 5.6rem);
+  line-height: 0.95;
+}
+
+.lede {
+  max-width: 44rem;
+  font-size: 1.2rem;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.8rem;
+}
+
+.actions a {
+  display: inline-block;
+  padding: 0.9rem 1.25rem;
+  border-radius: 999px;
+  text-decoration: none;
+  background: var(--accent);
+  color: white;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.actions a:last-child {
+  background: transparent;
+  color: var(--accent-strong);
+  border: 1px solid rgba(13, 111, 91, 0.25);
+}
+
+.actions a:hover {
+  transform: translateY(-2px);
+}
+
+.content {
+  display: grid;
+  gap: 1.25rem;
+  padding: 0 1.5rem 4rem;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+  padding: 1.5rem;
+}
+
+.card ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.8;
+}
+
+pre {
+  margin: 0;
+  overflow: auto;
+  background: #111916;
+  color: #eef7f4;
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+}
+
+code {
+  font-family: "Courier New", monospace;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 3.25rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions a {
+    text-align: center;
+  }
+}

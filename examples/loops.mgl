@@ -1,0 +1,16 @@
+let total = 0
+
+loop i from 1 to 5 {
+  total = total + i
+  print("i=" + i + ", total=" + total)
+}
+
+if total > 10 {
+  print("The sum is big")
+} else {
+  print("The sum is small")
+}
+
+loop countdown from 6 to 0 step -2 {
+  print("countdown=" + countdown)
+}

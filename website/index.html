@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Magnificent Language</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__inner">
+        <p class="eyebrow">MGL</p>
+        <h1>Magnificent Language</h1>
+        <p class="lede">
+          A readable systems-flavored language starter kit with a real lexer, parser,
+          interpreter, CLI, and docs.
+        </p>
+        <div class="actions">
+          <a href="../README.md">Read the README</a>
+          <a href="../docs/syntax.md">Explore syntax</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="card">
+        <h2>What ships in the box</h2>
+        <ul>
+          <li>Custom MGL syntax with braces and no semicolon requirement</li>
+          <li>Lexer, AST parser, tree-walking interpreter, and interactive REPL</li>
+          <li>CLI commands for help, version, program execution, and project scaffolding</li>
+          <li>Class support, methods, constructors, functions, loops, arrays, and imports</li>
+          <li>Built-in standard library for output, input, file I/O, type inspection, and conversion</li>
+        </ul>
+      </section>
+
+      <section class="card code-card">
+        <h2>Sample program</h2>
+        <pre><code>class Car {
+  func init(name) {
+    self.name = name
+  }
+
+  func drive() {
+    print(self.name + " is driving")
+  }
+}
+
+let car = Car("Nova")
+car.drive()</code></pre>
+      </section>
+
+      <section class="card code-card">
+        <h2>Modules</h2>
+        <pre><code>import "./modules/math.mgl"
+
+let values = [1, 2, 3]
+push(values, 4)
+
+print(math.add(2, 3))
+print(values[0])</code></pre>
+      </section>
+
+      <section class="card">
+        <h2>CLI</h2>
+        <pre><code>mgl help
+mgl version
+mgl run examples/hello.mgl
+mgl repl
+mgl init demo-app</code></pre>
+      </section>
+    </main>
+  </body>
+</html>

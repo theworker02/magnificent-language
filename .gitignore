@@ -1,0 +1,13 @@
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.tgz
+*.zip
+*.vsix
+dist/
+release/
+tmp/
+mgl-extension/*.vsix

@@ -1,0 +1,10 @@
+print("Hello from Magnificent Language")
+
+let product = "MGL"
+
+func greet(name) {
+  print("Welcome to " + name)
+}
+
+greet(product)
+print("2 + 3 = " + (2 + 3))

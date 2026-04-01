@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const { runCli } = require("../src/cli");
+
+Promise.resolve(runCli(process.argv.slice(2)))
+  .then((code) => {
+    process.exitCode = code;
+  })
+  .catch((error) => {
+    process.stderr.write(`${error && error.stack ? error.stack : String(error)}\n`);
+    process.exitCode = 1;
+  });
