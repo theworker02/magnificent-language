@@ -1,13 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 
-const { NativeFunction, stringifyValue } = require("../values");
+const { NativeFunction, stringifyValue, unwrapRuntimeValue } = require("../values");
+const { arrayType, namedType, tagValueWithType } = require("../types");
 const { MglRuntimeError } = require("../../utils/errors");
 
 function registerIoLibrary(environment, options = {}) {
   const stdout = options.stdout || process.stdout;
 
-  environment.define(
+  defineBuiltin(
+    environment,
     "print",
     new NativeFunction(
       "print",
@@ -19,7 +21,8 @@ function registerIoLibrary(environment, options = {}) {
     ),
   );
 
-  environment.define(
+  defineBuiltin(
+    environment,
     "input",
     new NativeFunction(
       "input",
@@ -35,7 +38,8 @@ function registerIoLibrary(environment, options = {}) {
     ),
   );
 
-  environment.define(
+  defineBuiltin(
+    environment,
     "readFile",
     new NativeFunction(
       "readFile",
@@ -52,7 +56,27 @@ function registerIoLibrary(environment, options = {}) {
     ),
   );
 
-  environment.define(
+  defineBuiltin(
+    environment,
+    "readLines",
+    new NativeFunction(
+      "readLines",
+      (interpreter, args) => {
+        const filePath = resolveRuntimePath(interpreter, args[0]);
+
+        try {
+          const lines = fs.readFileSync(filePath, "utf8").replace(/\r\n/g, "\n").split("\n");
+          return tagValueWithType(lines, arrayType(namedType("string")));
+        } catch (error) {
+          throw new MglRuntimeError(`readLines() failed: ${error.message}`);
+        }
+      },
+      { arity: 1 },
+    ),
+  );
+
+  defineBuiltin(
+    environment,
     "writeFile",
     new NativeFunction(
       "writeFile",
@@ -71,18 +95,49 @@ function registerIoLibrary(environment, options = {}) {
       { arity: 2 },
     ),
   );
+
+  defineBuiltin(
+    environment,
+    "exists",
+    new NativeFunction(
+      "exists",
+      (interpreter, args) => {
+        const filePath = resolveRuntimePath(interpreter, args[0]);
+        return fs.existsSync(filePath);
+      },
+      { arity: 1 },
+    ),
+  );
+
+  defineBuiltin(
+    environment,
+    "cwd",
+    new NativeFunction(
+      "cwd",
+      (interpreter) => interpreter.cwd || process.cwd(),
+      { arity: 0 },
+    ),
+  );
+}
+
+function defineBuiltin(environment, name, value) {
+  environment.define(name, value, {
+    source: "stdlib",
+  });
 }
 
 function resolveRuntimePath(interpreter, rawPath) {
-  if (typeof rawPath !== "string") {
+  const resolvedPath = unwrapRuntimeValue(rawPath);
+
+  if (typeof resolvedPath !== "string") {
     throw new MglRuntimeError("File path arguments must be strings.");
   }
 
-  if (path.isAbsolute(rawPath)) {
-    return rawPath;
+  if (path.isAbsolute(resolvedPath)) {
+    return resolvedPath;
   }
 
-  return path.resolve(interpreter.cwd || process.cwd(), rawPath);
+  return path.resolve(interpreter.cwd || process.cwd(), resolvedPath);
 }
 
 function readLineSync() {

@@ -1,68 +1,130 @@
 # MGL Syntax Reference
 
-## Comments
-
-Use `//` for line comments.
-
-```mgl
-// This is a comment
-```
-
 ## Variables
 
-Declare variables with `let`.
-
 ```mgl
-let count = 10
-let name = "Ada"
-let empty = null
-```
-
-Variables can be reassigned:
-
-```mgl
-count = count + 1
-```
-
-## Imports
-
-Use `import` with a string path to load another MGL file. The imported module is exposed as a namespace based on the file name.
-
-```mgl
-import "./modules/math.mgl"
-
-print(math.add(1, 2))
+let name: string = "Ada"
+let scores: array<number> = [4, 8, 15]
 ```
 
 ## Functions
 
-Functions are declared with `func`.
-
 ```mgl
-func add(a, b) {
+func add(a: number, b: number): number {
   return a + b
 }
-
-print(add(2, 3))
 ```
 
-## Conditionals
-
-Conditionals support `if`, `else if`, and `else`.
+Async functions:
 
 ```mgl
-if score > 90 {
-  print("Excellent")
-} else if score > 70 {
-  print("Good")
-} else {
-  print("Keep going")
+func fetchName(): string async {
+  await sleep(10)
+  return "Matt"
 }
 ```
 
-## Loops
+## Intent And Learning
 
-`loop` iterates over a numeric range. The `to` bound is inclusive.
+```mgl
+intent {
+  goal: "build scalable api"
+  priority: "performance"
+}
+
+learn {
+  trackPatterns: true
+}
+```
+
+## Classes
+
+```mgl
+class Car {
+  func init(name: string) {
+    self.name = name
+  }
+}
+```
+
+## Record Types
+
+```mgl
+type User {
+  name: string
+  age: number
+}
+```
+
+Instantiate a record type:
+
+```mgl
+let user = User {
+  name: "Matt",
+  age: 23
+}
+```
+
+## Object Literals
+
+```mgl
+let payload = {
+  name: "cache",
+  hits: 3
+}
+```
+
+## Modules
+
+```mgl
+export func add(a: number, b: number): number {
+  return a + b
+}
+```
+
+```mgl
+import "./modules/math.mgl" as math
+print(math.add(2, 3))
+```
+
+## Memory Tracking
+
+Track a value directly:
+
+```mgl
+let items = track [1, 2, 3]
+```
+
+Or use the built-in form:
+
+```mgl
+let items = track([1, 2, 3])
+```
+
+## Memory Statements
+
+```mgl
+inspect items
+memory items
+whyalive items
+optimize items
+```
+
+## Memory Built-Ins
+
+- `memoryOf(value)`
+- `ownerOf(value)`
+- `refsOf(value)`
+- `sizeOf(value)`
+- `isTracked(value)`
+- `whyAlive(value)`
+- `traceAllocations()`
+- `snapshotMemory(name?)`
+- `compareMemory(before, after)`
+- `watchMemory(value, label?)`
+- `optimize(value)`
+
+## Loops
 
 ```mgl
 loop i from 0 to 3 {
@@ -70,86 +132,55 @@ loop i from 0 to 3 {
 }
 ```
 
-You can also specify a step:
+Forever loop:
 
 ```mgl
-loop i from 10 to 0 step -2 {
-  print(i)
+loop {
+  await sleep(1000)
 }
 ```
-
-## Classes
-
-Classes group methods and are instantiated by calling the class name.
-
-```mgl
-class Counter {
-  func init(start) {
-    self.value = start
-  }
-
-  func increment() {
-    self.value = self.value + 1
-    return self.value
-  }
-}
-
-let counter = Counter(5)
-print(counter.increment())
-```
-
-`init` is treated as the constructor.
-
-## Expressions
-
-Supported operators:
-
-- Arithmetic: `+`, `-`, `*`, `/`, `%`
-- Comparison: `>`, `>=`, `<`, `<=`, `==`, `!=`
-- Logical: `and`, `or`, `!`
-
-`+` adds numbers and concatenates strings. If either operand is a string, MGL converts both sides to text.
 
 ## Arrays
 
-Arrays use square-bracket literals.
-
 ```mgl
-let values = [1, 2, 3]
+let values: array<number> = [1, 2, 3]
 push(values, 4)
-print(length(values))
-```
-
-Access elements by index:
-
-```mgl
-print(values[0])
 values[1] = 99
 ```
 
-## Blocks
-
-Blocks use braces:
+## Server Blocks
 
 ```mgl
-func greet(name) {
-  print("Hello, " + name)
+server {
+  middleware {
+    response.header("x-powered-by", "mgl")
+  }
+
+  route "/" {
+    return "Hello World"
+  }
+
+  route "/api/users" method "POST" {
+    return json({
+      ok: true
+    })
+  }
 }
 ```
 
-## Standard Library
+## Tasks
 
-Built-in functions available in every program:
+```mgl
+task cleanup {
+  await sleep(10)
+  print("done")
+}
+```
 
-- `print(...)` writes values to standard output.
-- `input(prompt)` reads one line from standard input.
-- `length(value)` returns the length of a string or array.
-- `push(array, value)` appends to an array and returns the new length.
-- `readFile(path)` reads a UTF-8 text file.
-- `writeFile(path, data)` writes UTF-8 text to a file.
-- `random()` returns a pseudorandom number between 0 and 1.
-- `clock()` returns the current Unix time in seconds.
-- `len(value)` is a compatibility alias for `length(value)`.
-- `type(value)` returns a human-readable type name.
-- `str(value)` converts a value to text.
-- `num(value)` converts a value to a number.
+## Tests
+
+```mgl
+test "addition works" {
+  assert(2 + 3 == 5)
+}
+```

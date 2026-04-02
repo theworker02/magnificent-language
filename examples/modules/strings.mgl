@@ -1,0 +1,7 @@
+export func headline(subject: string): string {
+  return "MGL report for " + subject
+}
+
+export func describeSeries(label: string, values: array<number>): string {
+  return label + ": " + join(values, ", ")
+}

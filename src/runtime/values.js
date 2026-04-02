@@ -1,4 +1,6 @@
 const { Environment } = require("./environment");
+const { MglFuture, isFuture, resolveFuture } = require("./async");
+const { MglTaskHandle } = require("./tasks");
 const { MglRuntimeError } = require("../utils/errors");
 
 class ReturnSignal {
@@ -14,6 +16,7 @@ class NativeFunction {
     this.exactArity = options.arity ?? null;
     this.minArity = options.minArity ?? null;
     this.maxArity = options.maxArity ?? null;
+    this.isAsync = options.isAsync ?? false;
   }
 
   acceptsArgs(count) {
@@ -46,11 +49,32 @@ class NativeFunction {
   }
 
   call(interpreter, args) {
-    return this.implementation(interpreter, args);
+    const result = this.implementation(interpreter, args);
+
+    if (this.isAsync) {
+      return new MglFuture(result, { label: this.name });
+    }
+
+    return result;
   }
 
   toString() {
     return `<native ${this.name}>`;
+  }
+}
+
+class MglTrackedScalar {
+  constructor(value, allocationId = null) {
+    this.value = value;
+    this.allocationId = allocationId;
+  }
+
+  valueOf() {
+    return this.value;
+  }
+
+  toString() {
+    return String(this.value);
   }
 }
 
@@ -70,42 +94,20 @@ class MglFunction {
   }
 
   bind(instance) {
-    const environment = new Environment(this.closure);
-    environment.define("self", instance);
+    const environment = new Environment(this.closure, {
+      registry: this.closure.registry || null,
+      scopeName: `method ${this.declaration.name.lexeme}`,
+      scopeKind: "function",
+    });
+    environment.define("self", instance, { source: "user" });
     return new MglFunction(this.declaration, environment, this.isInitializer);
   }
 
   call(interpreter, args) {
-    const environment = new Environment(this.closure);
-
-    this.declaration.params.forEach((param, index) => {
-      environment.define(param.lexeme, args[index]);
-    });
-
-    const previousFunctionDepth = interpreter.functionDepth;
-    interpreter.functionDepth += 1;
-
-    try {
-      interpreter.executeBlock(this.declaration.body.statements, environment);
-    } catch (error) {
-      if (error instanceof ReturnSignal) {
-        if (this.isInitializer) {
-          return environment.get("self");
-        }
-
-        return error.value;
-      }
-
-      throw error;
-    } finally {
-      interpreter.functionDepth = previousFunctionDepth;
-    }
-
-    if (this.isInitializer) {
-      return environment.get("self");
-    }
-
-    return null;
+    const promise = interpreter.invokeFunction(this, args);
+    return this.declaration.isAsync
+      ? new MglFuture(promise, { label: `func:${this.declaration.name.lexeme}` })
+      : promise;
   }
 
   toString() {
@@ -134,18 +136,26 @@ class MglClass {
   }
 
   call(interpreter, args) {
-    const instance = new MglInstance(this);
-    const initializer = this.findMethod("init");
-
-    if (initializer) {
-      initializer.bind(instance).call(interpreter, args);
-    }
-
-    return instance;
+    return interpreter.invokeClass(this, args);
   }
 
   toString() {
     return `<class ${this.name}>`;
+  }
+}
+
+class MglRecordType {
+  constructor(name, fields = []) {
+    this.name = name;
+    this.fields = new Map(fields.map((field) => [field.name.lexeme, field]));
+  }
+
+  getField(name) {
+    return this.fields.get(name) || null;
+  }
+
+  toString() {
+    return `<type ${this.name}>`;
   }
 }
 
@@ -180,10 +190,37 @@ class MglModule {
   }
 }
 
-class MglInstance {
-  constructor(klass) {
-    this.klass = klass;
+class MglObjectBase {
+  constructor(typeName, options = {}) {
+    this.typeName = typeName;
     this.fields = new Map();
+    this.anonymous = options.anonymous ?? false;
+  }
+
+  get(nameToken, filePath = null) {
+    const name = nameToken.lexeme;
+
+    if (this.fields.has(name)) {
+      return this.fields.get(name);
+    }
+
+    throw new MglRuntimeError(`Undefined property '${name}'.`, {
+      filePath,
+      line: nameToken.line,
+      column: nameToken.column,
+    });
+  }
+
+  set(nameToken, value) {
+    this.fields.set(nameToken.lexeme, value);
+    return value;
+  }
+}
+
+class MglInstance extends MglObjectBase {
+  constructor(klass) {
+    super(klass.name);
+    this.klass = klass;
   }
 
   get(nameToken, filePath = null) {
@@ -205,27 +242,72 @@ class MglInstance {
     });
   }
 
-  set(nameToken, value) {
-    this.fields.set(nameToken.lexeme, value);
-    return value;
-  }
-
   toString() {
     return `<${this.klass.name} instance>`;
   }
 }
 
-function isCallable(value) {
-  return value && typeof value.call === "function" && typeof value.acceptsArgs === "function";
+class MglRecordInstance extends MglObjectBase {
+  constructor(typeName, options = {}) {
+    super(typeName, options);
+    this.schema = options.schema || null;
+  }
+
+  toString() {
+    return this.anonymous ? "<object>" : `<${this.typeName}>`;
+  }
 }
 
-function stringifyValue(value) {
+function isCallable(value) {
+  const rawValue = unwrapRuntimeValue(value);
+  return rawValue && typeof rawValue.call === "function" && typeof rawValue.acceptsArgs === "function";
+}
+
+function unwrapRuntimeValue(value) {
+  return value instanceof MglTrackedScalar ? value.value : value;
+}
+
+function runtimeValueFromJs(value, options = {}) {
+  if (
+    value instanceof MglRecordInstance
+    || value instanceof MglTrackedScalar
+    || value instanceof MglFuture
+    || value instanceof MglTaskHandle
+    || isCallable(value)
+  ) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => runtimeValueFromJs(item, options));
+  }
+
+  if (value && typeof value === "object") {
+    const record = new MglRecordInstance(options.typeName || "object", {
+      anonymous: options.anonymous ?? true,
+      schema: options.schema || null,
+    });
+
+    Object.entries(value).forEach(([key, nestedValue]) => {
+      record.fields.set(key, runtimeValueFromJs(nestedValue, { anonymous: true }));
+    });
+    return record;
+  }
+
+  return value;
+}
+
+function stringifyValue(value, seen = new Set()) {
+  if (value instanceof MglTrackedScalar) {
+    return stringifyValue(value.value, seen);
+  }
+
   if (value === null) {
     return "null";
   }
 
   if (typeof value === "number") {
-    return Number.isInteger(value) ? String(value) : String(value);
+    return String(value);
   }
 
   if (typeof value === "boolean") {
@@ -237,15 +319,42 @@ function stringifyValue(value) {
   }
 
   if (Array.isArray(value)) {
-    return `[${value.map((item) => stringifyValue(item)).join(", ")}]`;
+    if (seen.has(value)) {
+      return "[<cycle>]";
+    }
+
+    seen.add(value);
+    const rendered = `[${value.map((item) => stringifyValue(item, seen)).join(", ")}]`;
+    seen.delete(value);
+    return rendered;
+  }
+
+  if (value instanceof MglRecordInstance || value instanceof MglInstance) {
+    if (seen.has(value)) {
+      return value instanceof MglRecordInstance && value.anonymous ? "{<cycle>}" : `${value.typeName} {<cycle>}`;
+    }
+
+    seen.add(value);
+    const body = Array.from(value.fields.entries())
+      .map(([key, fieldValue]) => `${key}: ${stringifyValue(fieldValue, seen)}`)
+      .join(", ");
+    seen.delete(value);
+
+    if (value instanceof MglRecordInstance && value.anonymous) {
+      return `{ ${body} }`;
+    }
+
+    return `${value.typeName} { ${body} }`;
   }
 
   if (
     value instanceof MglClass
     || value instanceof MglFunction
     || value instanceof NativeFunction
-    || value instanceof MglInstance
     || value instanceof MglModule
+    || value instanceof MglRecordType
+    || value instanceof MglFuture
+    || value instanceof MglTaskHandle
   ) {
     return value.toString();
   }
@@ -254,35 +363,53 @@ function stringifyValue(value) {
 }
 
 function typeOfValue(value) {
-  if (value === null) {
+  const rawValue = unwrapRuntimeValue(value);
+
+  if (rawValue === null) {
     return "null";
   }
 
-  if (value instanceof NativeFunction) {
+  if (rawValue instanceof NativeFunction) {
     return "native-function";
   }
 
-  if (value instanceof MglFunction) {
+  if (rawValue instanceof MglFunction) {
     return "function";
   }
 
-  if (value instanceof MglClass) {
+  if (rawValue instanceof MglClass) {
     return "class";
   }
 
-  if (value instanceof MglModule) {
+  if (rawValue instanceof MglRecordType) {
+    return "type";
+  }
+
+  if (rawValue instanceof MglFuture) {
+    return "future";
+  }
+
+  if (rawValue instanceof MglTaskHandle) {
+    return "task";
+  }
+
+  if (rawValue instanceof MglModule) {
     return "module";
   }
 
-  if (value instanceof MglInstance) {
-    return value.klass.name;
+  if (rawValue instanceof MglInstance) {
+    return rawValue.klass.name;
   }
 
-  if (Array.isArray(value)) {
+  if (rawValue instanceof MglRecordInstance) {
+    return rawValue.typeName;
+  }
+
+  if (Array.isArray(rawValue)) {
     return "array";
   }
 
-  return typeof value;
+  return typeof rawValue;
 }
 
 module.exports = {
@@ -290,9 +417,16 @@ module.exports = {
   MglFunction,
   MglInstance,
   MglModule,
+  MglRecordInstance,
+  MglRecordType,
+  MglTrackedScalar,
   NativeFunction,
   ReturnSignal,
   isCallable,
+  isFuture,
+  resolveFuture,
+  runtimeValueFromJs,
   stringifyValue,
   typeOfValue,
+  unwrapRuntimeValue,
 };

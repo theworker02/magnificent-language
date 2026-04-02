@@ -8,6 +8,12 @@ Thumbs.db
 *.zip
 *.vsix
 dist/
+build/
 release/
 tmp/
+.mgl/
+**/.mgl/
+.mgl-cache/
+**/.mgl-cache/
+**/build/
 mgl-extension/*.vsix

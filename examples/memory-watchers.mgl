@@ -1,0 +1,7 @@
+let queue = track ["alpha", "beta"]
+
+print(watchMemory(queue, "queue"))
+push(queue, "gamma")
+queue[0] = "omega"
+
+print(memoryOf(queue))

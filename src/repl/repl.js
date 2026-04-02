@@ -1,7 +1,10 @@
+const path = require("path");
 const readline = require("readline");
 
-const { createSession, runSource, version } = require("../index");
-const { stringifyValue } = require("../runtime/values");
+const { createSession, runFile, runSource, version } = require("../index");
+const { runtimeValueFromJs, stringifyValue } = require("../runtime/values");
+const { describeRuntimeType, stringifyType } = require("../runtime/types");
+const { inspectValue } = require("../runtime/memory");
 const { formatError } = require("../utils/errors");
 
 function startRepl(options = {}) {
@@ -22,6 +25,7 @@ function startRepl(options = {}) {
   });
 
   let buffer = "";
+  let lineQueue = Promise.resolve();
 
   stdout.write(`Magnificent Language REPL v${version}\n`);
   stdout.write("Type .help for commands and .exit to quit.\n");
@@ -29,7 +33,7 @@ function startRepl(options = {}) {
   rl.prompt();
 
   return new Promise((resolve) => {
-    rl.on("line", (line) => {
+    const processLine = async (line) => {
       const trimmed = line.trim();
 
       if (!buffer && trimmed === ".exit") {
@@ -38,9 +42,13 @@ function startRepl(options = {}) {
       }
 
       if (!buffer && trimmed === ".help") {
-        stdout.write(".help  Show REPL commands\n");
-        stdout.write(".reset Reset the current session\n");
-        stdout.write(".exit  Exit the REPL\n");
+        stdout.write(".help           Show REPL commands\n");
+        stdout.write(".reset          Reset the current session\n");
+        stdout.write(".load <file>    Run an MGL file in the current session\n");
+        stdout.write(".type <expr>    Evaluate an expression and print its runtime type\n");
+        stdout.write(".memory <expr>  Evaluate an expression and print tracked memory info\n");
+        stdout.write(".symbols        Show user-defined bindings\n");
+        stdout.write(".exit           Exit the REPL\n");
         rl.prompt();
         return;
       }
@@ -52,6 +60,30 @@ function startRepl(options = {}) {
           cwd: options.cwd || process.cwd(),
         });
         stdout.write("Session reset.\n");
+        rl.prompt();
+        return;
+      }
+
+      if (!buffer && trimmed.startsWith(".load ")) {
+        await handleLoadCommand(trimmed.slice(6), session, options, stdout, stderr, color);
+        rl.prompt();
+        return;
+      }
+
+      if (!buffer && trimmed.startsWith(".type ")) {
+        await handleTypeCommand(trimmed.slice(6), session, options, stdout, stderr, color);
+        rl.prompt();
+        return;
+      }
+
+      if (!buffer && trimmed.startsWith(".memory ")) {
+        await handleMemoryCommand(trimmed.slice(8), session, options, stdout, stderr, color);
+        rl.prompt();
+        return;
+      }
+
+      if (!buffer && trimmed === ".symbols") {
+        printSymbols(session, stdout);
         rl.prompt();
         return;
       }
@@ -72,7 +104,7 @@ function startRepl(options = {}) {
       }
 
       try {
-        const result = runSource(source, {
+        const result = await runSource(source, {
           session,
           cwd: options.cwd || process.cwd(),
           sourceName: "<repl>",
@@ -88,6 +120,17 @@ function startRepl(options = {}) {
       buffer = "";
       rl.setPrompt("> ");
       rl.prompt();
+    };
+
+    rl.on("line", (line) => {
+      lineQueue = lineQueue
+        .then(() => processLine(line))
+        .catch((error) => {
+          stderr.write(`${formatError(error, { color })}\n`);
+          buffer = "";
+          rl.setPrompt("> ");
+          rl.prompt();
+        });
     });
 
     rl.on("close", () => {
@@ -97,9 +140,84 @@ function startRepl(options = {}) {
   });
 }
 
+async function handleLoadCommand(argument, session, options, stdout, stderr, color) {
+  const target = argument.trim();
+  if (!target) {
+    stderr.write("Usage: .load <file>\n");
+    return;
+  }
+
+  try {
+    const filePath = path.resolve(options.cwd || process.cwd(), target);
+    await runFile(filePath, {
+      session,
+      cwd: path.dirname(filePath),
+      stdout,
+      stderr,
+    });
+    stdout.write(`Loaded ${target}\n`);
+  } catch (error) {
+    stderr.write(`${formatError(error, { color })}\n`);
+  }
+}
+
+async function handleTypeCommand(expressionSource, session, options, stdout, stderr, color) {
+  const expression = expressionSource.trim();
+  if (!expression) {
+    stderr.write("Usage: .type <expression>\n");
+    return;
+  }
+
+  try {
+    const result = await runSource(expression, {
+      session,
+      cwd: options.cwd || process.cwd(),
+      sourceName: "<repl:type>",
+    });
+    stdout.write(`${describeRuntimeType(result)}\n`);
+  } catch (error) {
+    stderr.write(`${formatError(error, { color })}\n`);
+  }
+}
+
+async function handleMemoryCommand(expressionSource, session, options, stdout, stderr, color) {
+  const expression = expressionSource.trim();
+  if (!expression) {
+    stderr.write("Usage: .memory <expression>\n");
+    return;
+  }
+
+  try {
+    const result = await runSource(expression, {
+      session,
+      cwd: options.cwd || process.cwd(),
+      sourceName: "<repl:memory>",
+    });
+    stdout.write(`${stringifyValue(runtimeValueFromJs(inspectValue(session.interpreter.memoryRegistry, result), { anonymous: true }))}\n`);
+  } catch (error) {
+    stderr.write(`${formatError(error, { color })}\n`);
+  }
+}
+
+function printSymbols(session, stdout) {
+  const bindings = session.interpreter.environment
+    .describeBindings({ includeStdlib: false })
+    .sort((left, right) => left.name.localeCompare(right.name));
+
+  if (bindings.length === 0) {
+    stdout.write("No user-defined bindings.\n");
+    return;
+  }
+
+  for (const binding of bindings) {
+    const declaredType = binding.declaredType ? stringifyType(binding.declaredType) : "any";
+    stdout.write(`${binding.name}: ${declaredType} = ${stringifyValue(binding.value)}\n`);
+  }
+}
+
 function shouldEchoResult(source) {
   const trimmed = source.trim();
-  return !/^(let|func|class|if|loop|return|import)\b/.test(trimmed);
+  return !/^(export\s+)?(let|func|class|type|if|loop|return|import|inspect|memory|whyalive|optimize|server|task|test)\b/.test(trimmed);
 }
 
 function isCompleteSource(source) {

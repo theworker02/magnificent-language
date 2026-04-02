@@ -1,13 +1,17 @@
-func add(a, b) {
+export func add(a: number, b: number): number {
   return a + b
 }
 
-func average(values) {
-  let total = 0
+export func sum(values: array<number>): number {
+  let total: number = 0
 
   loop i from 0 to length(values) - 1 {
     total = total + values[i]
   }
 
-  return total / length(values)
+  return total
+}
+
+export func average(values: array<number>): number {
+  return sum(values) / length(values)
 }

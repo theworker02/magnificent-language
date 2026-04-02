@@ -1,0 +1,8 @@
+task cleanup {
+  await sleep(10)
+  print("task: cleanup complete")
+}
+
+print("status=" + taskStatus(cleanup))
+await waitTask(cleanup)
+print("status=" + taskStatus(cleanup))

@@ -1,0 +1,67 @@
+intent {
+  goal: "build scalable api",
+  priority: "performance"
+}
+
+learn {
+  trackPatterns: true
+}
+
+let x = track []
+let y = []
+let z = []
+
+func processData(records: array<number>): array<number> async {
+  let result: array<number> = []
+
+  loop i from 0 to length(records) - 1 {
+    let payload = track {
+      value: records[i],
+      doubled: records[i] * 2
+    }
+
+    if payload.doubled > 10 {
+      push(result, payload.doubled)
+    } else {
+      push(result, payload.value)
+    }
+
+    push(x, payload)
+    push(y, payload.value)
+    push(z, payload.doubled)
+  }
+
+  return result
+}
+
+server {
+  route "/api/items" {
+    return json({
+      items: await processData([2, 4, 6, 8, 10, 12])
+    })
+  }
+
+  route "/api/summary" {
+    return json({
+      tracked: isTracked(x),
+      count: length(x)
+    })
+  }
+
+  route "/api/a" {
+    return "a"
+  }
+
+  route "/api/b" {
+    return "b"
+  }
+
+  route "/api/c" {
+    return "c"
+  }
+}
+
+test "demo route returns items" {
+  let res = await serverRequest("/api/items")
+  assert(res.status == 200)
+}

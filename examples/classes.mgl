@@ -1,18 +1,18 @@
 class Car {
-  func init(name, speed) {
+  func init(name: string, speed: number) {
     self.name = name
     self.speed = speed
   }
 
-  func drive() {
+  func drive(): void {
     print(self.name + " is driving at " + self.speed + " mph")
   }
 
-  func describe() {
+  func describe(): string {
     return "Car(" + self.name + ", " + self.speed + ")"
   }
 }
 
-let car = Car("Roadster", 88)
+let car: Car = Car("Roadster", 88)
 car.drive()
 print(car.describe())

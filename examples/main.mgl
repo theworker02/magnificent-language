@@ -1,0 +1,39 @@
+import "./modules/math.mgl" as math
+import "./modules/strings.mgl" as strings
+
+class Report {
+  func init(name: string, samples: array<number>) {
+    self.name = name
+    self.samples = samples
+  }
+
+  func describe(): string {
+    return self.name + " => " + join(self.samples, " | ")
+  }
+}
+
+func delayedStatus(label: string): string async {
+  await sleep(5)
+  return "async=" + label
+}
+
+task warmup {
+  await sleep(10)
+  print("task=warmup complete")
+}
+
+let samples: array<number> = track range(2, 8, 2)
+let report: Report = Report("Quarterly", samples)
+let mainSnapshot = snapshotMemory("main")
+
+assert(type(samples) == "array<number>", "typed arrays should preserve element metadata")
+
+print(strings.headline("main example"))
+print("sum=" + math.sum(samples))
+print("average=" + math.average(samples))
+print(strings.describeSeries("samples", samples))
+print(report.describe())
+print("tracked=" + isTracked(samples))
+print("allocations=" + mainSnapshot.allocationCount)
+print(await delayedStatus("ready"))
+await waitTask(warmup)

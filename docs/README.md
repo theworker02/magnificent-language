@@ -1,29 +1,35 @@
 # MGL Documentation
 
-This directory contains the canonical documentation for Magnificent Language.
+Magnificent Language 1.6.0 combines typed scripting, Living Memory Architecture, predictive execution, Rust interoperability, Unity output, Linux runtime support, async execution, background tasks, a built-in web server, and an Intelligent Language System.
 
 ## Read This First
 
 - [Getting Started](getting-started.md)
 - [Syntax Reference](syntax.md)
 - [Examples](examples.md)
-- [GitHub Release Guide](github-release.md)
+- [Tooling](tooling.md)
+- [Intelligent Language System](intelligence.md)
+- [Living Memory Architecture](memory-intelligence.md)
+- [Predictive Engine](predictive-engine.md)
+- [Rust Integration](rust-integration.md)
+- [Linux Support](linux-support.md)
+- [FFI](ffi.md)
+- [Unity Integration](unity-integration.md)
+- [Game Prediction](game-prediction.md)
+- [Tracking](tracking.md)
+- [Snapshots](snapshots.md)
+- [CLI Memory Tools](cli-memory-tools.md)
+- [Optimization Hints](optimization-hints.md)
+- [Modules](modules.md)
 
-## What MGL Is
+## Core Themes
 
-MGL is a small but real interpreted language with:
-
-- A custom lexer
-- An AST-based parser
-- A tree-walking interpreter
-- A REPL
-- A standard library
-- A module system with namespace imports
-- A CLI runner suitable for local development and future extension
-
-## Design Principles
-
-- Readability over punctuation noise
-- Structured blocks over indentation sensitivity
-- Familiar control flow and object modeling
-- A runtime simple enough to study, yet robust enough to extend
+- Typed declarations and structured modules
+- Language-native memory tracking
+- Built-in HTTP serving and route testing
+- Async functions and background tasks
+- Intent-aware analysis and project health insights
+- Predictive simulation for scripts and gameplay
+- Rust-backed native acceleration
+- Linux-native process and system tooling
+- CLI tools for scripting, services, and diagnostics

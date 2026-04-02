@@ -1,0 +1,10 @@
+print("os=" + system.os())
+print("arch=" + system.arch())
+print("cwd=" + system.cwd())
+
+let execResult = await system.exec("printf exec-ok")
+let proc = system.spawn("node", ["-e", "setTimeout(() => process.exit(0), 1)"])
+let result = await proc.wait()
+
+print("exec-output=" + execResult.stdout)
+print("spawn-status=" + result.status)

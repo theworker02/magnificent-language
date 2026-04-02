@@ -1,70 +1,46 @@
 # MGL Examples
 
-## Hello World
+## Core Language
 
-```mgl
-print("Hello from MGL")
-```
+- `examples/hello.mgl`
+- `examples/loops.mgl`
+- `examples/classes.mgl`
+- `examples/imports.mgl`
+- `examples/main.mgl`
 
-## Summation Loop
+## Platform Examples
 
-```mgl
-let total = 0
+- `examples/api-server.mgl`
+  Shows `intent`, `learn`, native `server` blocks, middleware, JSON responses, direct route tests, and request validation.
 
-loop i from 1 to 5 {
-  total = total + i
-}
+- `examples/async-example.mgl`
+  Shows `async` functions, `await`, and futures.
 
-print("Total: " + total)
-```
+- `examples/task-system.mgl`
+  Shows `task` declarations, status inspection, and `waitTask()`.
 
-## Functions
+- `examples/intelligence-demo.mgl`
+  Shows intent-driven analysis, learning mode, monolithic-route detection, performance warnings, and refactor suggestions.
 
-```mgl
-func square(x) {
-  return x * x
-}
+- `examples/rust-interop.mgl`
+  Shows `import rust`, typed cross-language calls, Rust array handling, and native acceleration.
 
-print(square(9))
-```
+- `examples/system-demo.mgl`
+  Shows `system.os()`, `system.exec()`, and spawned-process lifecycle handling.
 
-## Classes
+- `examples/unity/player.mgl`
+  Shows Unity lifecycle mapping for `start()`, `update()`, and `fixedUpdate()`.
 
-```mgl
-class Car {
-  func init(name) {
-    self.name = name
-  }
+## Living Memory Architecture
 
-  func drive() {
-    print(self.name + " is driving")
-  }
-}
+- `examples/memory-arrays.mgl`
+  Shows tracked arrays, `memoryOf`, `sizeOf`, `whyAlive`, and `optimize`.
 
-let car = Car("Comet")
-car.drive()
-```
+- `examples/memory-types.mgl`
+  Shows `type` declarations, tracked record instances, owner summaries, and lifetime explanations.
 
-## Imports
+- `examples/memory-snapshots.mgl`
+  Shows `snapshotMemory()` and `compareMemory()`.
 
-```mgl
-import "./modules/math.mgl"
-
-print(math.add(2, 3))
-```
-
-## Arrays
-
-```mgl
-let items = ["one", "two"]
-push(items, "three")
-print(length(items))
-print(items)
-```
-
-## Included Example Programs
-
-- `examples/hello.mgl` demonstrates literals, function calls, and string concatenation.
-- `examples/loops.mgl` demonstrates ranges, numeric arithmetic, conditionals, and loop scope.
-- `examples/classes.mgl` demonstrates classes, constructors, fields, methods, and return values.
-- `examples/imports.mgl` demonstrates modules, namespaces, arrays, and standard-library helpers.
+- `examples/memory-watchers.mgl`
+  Shows `watchMemory()` and tracked mutation paths.

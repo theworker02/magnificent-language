@@ -1,7 +1,7 @@
 {
   "name": "magnificent-language",
-  "version": "1.0.0",
-  "description": "Magnificent Language (MGL): a clean, readable programming language with a lexer, parser, interpreter, and CLI.",
+  "version": "1.6.0",
+  "description": "Magnificent Language (MGL): an intelligent programming platform with memory intelligence, predictive execution, Rust interoperability, Unity output, and Linux-native tooling.",
   "type": "commonjs",
   "main": "src/index.js",
   "bin": {

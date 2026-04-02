@@ -1,6 +1,6 @@
-import "./modules/math.mgl"
+import "./modules/math.mgl" as math
 
-let values = [1, 2, 3]
+let values: array<number> = [1, 2, 3]
 push(values, 4)
 
 print("sum=" + math.add(7, 5))

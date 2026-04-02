@@ -48,6 +48,9 @@ class Lexer {
       case "]":
         this.addToken(TokenType.RIGHT_BRACKET);
         break;
+      case ":":
+        this.addToken(TokenType.COLON);
+        break;
       case ",":
         this.addToken(TokenType.COMMA);
         break;

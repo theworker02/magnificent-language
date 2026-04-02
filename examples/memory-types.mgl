@@ -1,0 +1,13 @@
+type Inventory {
+  items: array<string>
+  owner: string
+}
+
+let inv = track Inventory {
+  items: ["rope", "torch", "knife"],
+  owner: "camp"
+}
+
+print(memoryOf(inv))
+print(ownerOf(inv))
+print(whyAlive(inv))

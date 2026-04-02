@@ -1,0 +1,10 @@
+import rust "./rust/math.rs" as math
+
+let total = math.add(5, 10)
+let scaled = math.scale([1, 2, 3, 4], 3)
+let average = math.average([2.0, 4.0, 6.0, 8.0])
+
+print("rust-add=" + total)
+print("rust-scale=" + join(scaled, ", "))
+print("rust-average=" + average)
+print(math.greet("MGL"))

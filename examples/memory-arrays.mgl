@@ -1,0 +1,6 @@
+let items: array<number> = track [1, 2, 3, 4]
+
+print(memoryOf(items))
+print(sizeOf(items))
+print(whyAlive(items))
+print(optimize(items))

@@ -1,0 +1,6 @@
+let snap1 = snapshotMemory("before")
+let buffer = track range(1, 5)
+let snap2 = snapshotMemory("after")
+
+print(compareMemory(snap1, snap2))
+print(memoryOf(buffer))

@@ -1,0 +1,14 @@
+class Player {
+  func start(): void {
+    print("Game started")
+    transform.position = Vector3(0, 1, 0)
+  }
+
+  func update(): void {
+    print("Frame update")
+  }
+
+  func fixedUpdate(): void {
+    print("Physics tick")
+  }
+}

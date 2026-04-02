@@ -1,0 +1,8 @@
+func delayedDouble(value: number): number async {
+  await sleep(10)
+  return value * 2
+}
+
+let pending = delayedDouble(21)
+print("future=" + type(pending))
+print("result=" + await pending)

@@ -1,0 +1,58 @@
+intent {
+  goal: "build scalable api",
+  priority: "performance"
+}
+
+learn {
+  trackPatterns: true
+}
+
+server {
+  middleware {
+    log.info("request received", {
+      method: request.method,
+      path: request.path
+    })
+    response.header("x-powered-by", "mgl")
+  }
+
+  route "/" {
+    return "Hello from MGL server"
+  }
+
+  route "/api/users" {
+    return json({
+      users: ["Matt", "John"]
+    })
+  }
+
+  route "/api/echo" method "POST" {
+    requireFields(request.json, ["message"])
+    validate.string(request.json.message, "message")
+    response.status(201)
+    response.json({
+      echoed: request.json.message
+    })
+  }
+}
+
+test "root route responds" {
+  let res = await serverRequest("/")
+  assert(res.status == 200)
+  assert(res.body == "Hello from MGL server")
+}
+
+test "users route returns json" {
+  let res = await serverRequest("/api/users")
+  assert(res.status == 200)
+  assert(length(res.json.users) == 2)
+  assert(res.json.users[0] == "Matt")
+}
+
+test "echo route accepts json bodies" {
+  let res = await serverRequest("/api/echo", "POST", {
+    message: "hi from test"
+  })
+  assert(res.status == 201)
+  assert(res.json.echoed == "hi from test")
+}
