@@ -81,4 +81,4 @@ cd mgl-extension
 npx @vscode/vsce package
 ```
 
-For full release steps, see [../docs/github-release.md](../docs/github-release.md).
+For full release steps, see [the GitHub release guide](https://github.com/theworker02/magnificent-language/blob/main/docs/github-release.md).

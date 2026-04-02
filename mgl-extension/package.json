@@ -2,9 +2,17 @@
   "name": "magnificent-language-vscode",
   "displayName": "Magnificent Language",
   "description": "VS Code support for Magnificent Language (MGL): syntax highlighting, snippets, file associations, and CLI commands.",
-  "version": "1.1.0",
+  "version": "1.6.0",
   "publisher": "magnificent-language",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theworker02/magnificent-language.git"
+  },
+  "homepage": "https://github.com/theworker02/magnificent-language",
+  "bugs": {
+    "url": "https://github.com/theworker02/magnificent-language/issues"
+  },
   "icon": "mgl-extension-icon.png",
   "engines": {
     "vscode": "^1.85.0"
