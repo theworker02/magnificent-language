@@ -1,7 +1,6 @@
 ![Version](https://img.shields.io/badge/version-1.6.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
-![Memory](https://img.shields.io/badge/living-memory-enabled-orange)
 ![Predictive](https://img.shields.io/badge/predictive-execution-crimson)
 ![Native](https://img.shields.io/badge/native-rust%20%2B%20linux-brown)
 
@@ -204,6 +203,11 @@ magnificent-language/
     ├── tooling/
     └── unity/
 ```
+
+## Install Extension On VS Code
+
+[Install MGL](https://marketplace.visualstudio.com/items?itemName=magnificent-language.magnificent-language-vscode)
+
 
 ## Docs
 
