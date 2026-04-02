@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://github.com/theworker02/magnificent-language/issues"
   },
-  "icon": "mgl-extension-icon.png",
+  "icon": "images/mgl-icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
