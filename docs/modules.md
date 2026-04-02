@@ -5,7 +5,7 @@
 Modules can explicitly export top-level declarations with `export`.
 
 ```mgl
-export let version: string = "1.0.0"
+export let version: string = "1.6.0"
 
 export func add(a: number, b: number): number {
   return a + b

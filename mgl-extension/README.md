@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.6.0-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85%2B-007ACC)
 ![File Type](https://img.shields.io/badge/file-.mgl-8A2BE2)
 ![Commands](https://img.shields.io/badge/commands-5-brightgreen)
